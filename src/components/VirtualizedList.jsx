@@ -8,6 +8,7 @@ function VirtualizedList({ data, renderItem, height = 400 }) {
   // Constants for virtualization
   const ROW_HEIGHT = 50; // Fixed row height in pixels
   const BUFFER_SIZE = 5; // Number of extra rows to render above/below visible area
+  // Buffer prevents white space when scrolling quickly by rendering extra rows
 
   // Calculate visible range based on scroll position
   // Core virtualization math:
@@ -88,6 +89,8 @@ function VirtualizedList({ data, renderItem, height = 400 }) {
       {/* Debug info */}
       <div className="mt-2 text-xs text-gray-500">
         Rendering {visibleRows.length} of {data.length} rows (indices {bufferedStart}-{bufferedEnd - 1})
+        <br />
+        Buffer: {BUFFER_SIZE} rows above/below visible area prevents white flash
       </div>
     </div>
   );
