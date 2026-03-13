@@ -4,6 +4,7 @@ import { AuthProvider } from './context/AuthContext';
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 import Details from './components/Details';
+import Analytics from './components/Analytics';
 import ProtectedRoute from './components/ProtectedRoute';
 import './index.css';
 
@@ -26,7 +27,7 @@ function App() {
             } />
             <Route path="/analytics" element={
               <ProtectedRoute>
-                <div>Analytics Coming Soon</div>
+                <Analytics />
               </ProtectedRoute>
             } />
           </Routes>
