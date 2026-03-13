@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -6,6 +8,8 @@ function Login() {
     password: ''
   });
   const [errors, setErrors] = useState({});
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -40,9 +44,10 @@ function Login() {
       return;
     }
     
-    // Simple validation for demo - in real app would check against API
-    if (formData.username === 'admin' && formData.password === 'admin') {
-      alert('Login successful! (Will redirect to dashboard soon)');
+    // Use auth context login
+    const success = login(formData.username, formData.password);
+    if (success) {
+      navigate('/dashboard');
     } else {
       alert('Invalid credentials. Use admin/admin for demo');
     }
