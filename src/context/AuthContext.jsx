@@ -16,9 +16,12 @@ export function AuthProvider({ children }) {
     const token = localStorage.getItem('authToken');
     const savedUser = localStorage.getItem('authUser');
     
+    console.log('Checking auth on mount:', { token: !!token, savedUser: !!savedUser });
+    
     if (token && savedUser) {
       try {
         const userData = JSON.parse(savedUser);
+        console.log('Restoring user session:', userData);
         setIsAuthenticated(true);
         setUser(userData);
       } catch (error) {
@@ -35,6 +38,8 @@ export function AuthProvider({ children }) {
     if (username === 'admin' && password === 'admin') {
       const userData = { username: 'admin', name: 'Administrator' };
       const token = 'demo-token-' + Date.now();
+      
+      console.log('Login successful, storing auth data');
       
       setIsAuthenticated(true);
       setUser(userData);
