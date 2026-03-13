@@ -4,7 +4,9 @@ function CameraCapture({ onPhotoCapture }) {
   const [stream, setStream] = useState(null);
   const [error, setError] = useState(null);
   const [isCameraActive, setIsCameraActive] = useState(false);
+  const [capturedImage, setCapturedImage] = useState(null);
   const videoRef = useRef(null);
+  const canvasRef = useRef(null);
 
   useEffect(() => {
     return () => {
@@ -46,15 +48,32 @@ function CameraCapture({ onPhotoCapture }) {
   };
 
   const capturePhoto = () => {
-    if (videoRef.current && onPhotoCapture) {
-      const canvas = document.createElement('canvas');
-      canvas.width = videoRef.current.videoWidth;
-      canvas.height = videoRef.current.videoHeight;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(videoRef.current, 0, 0);
+    if (videoRef.current && canvasRef.current) {
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      const context = canvas.getContext('2d');
       
-      const imageData = canvas.toDataURL('image/jpeg');
-      onPhotoCapture(imageData);
+      // Set canvas dimensions to match video
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      
+      // Draw video frame to canvas
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      
+      // Get image data from canvas
+      const imageData = canvas.toDataURL('image/jpeg', 0.9);
+      setCapturedImage(imageData);
+      
+      // Pass to parent component
+      if (onPhotoCapture) {
+        onPhotoCapture(imageData);
+      }
+      
+      console.log('Photo captured to canvas:', {
+        width: canvas.width,
+        height: canvas.height,
+        dataSize: imageData.length
+      });
     }
   };
 
@@ -115,6 +134,25 @@ function CameraCapture({ onPhotoCapture }) {
                 Stop Camera
               </button>
             </div>
+          </div>
+        )}
+        
+        {/* Hidden canvas for photo capture */}
+        <canvas
+          ref={canvasRef}
+          style={{ display: 'none' }}
+        />
+        
+        {/* Show captured image */}
+        {capturedImage && (
+          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+            <h3 className="text-sm font-medium text-gray-700 mb-2">Captured Photo Preview:</h3>
+            <img 
+              src={capturedImage} 
+              alt="Captured" 
+              className="w-full rounded-lg border border-gray-300"
+              style={{ maxWidth: '200px', margin: '0 auto', display: 'block' }}
+            />
           </div>
         )}
       </div>
