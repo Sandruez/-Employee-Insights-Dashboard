@@ -1,4 +1,24 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+
+// Manual throttle function - no external dependencies
+function throttle(func, delay) {
+  let timeoutId;
+  let lastExecTime = 0;
+  return function (...args) {
+    const currentTime = Date.now();
+    
+    if (currentTime - lastExecTime > delay) {
+      func.apply(this, args);
+      lastExecTime = currentTime;
+    } else {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        func.apply(this, args);
+        lastExecTime = Date.now();
+      }, delay - (currentTime - lastExecTime));
+    }
+  };
+}
 
 function VirtualizedList({ data, renderItem, height = 400 }) {
   const [scrollTop, setScrollTop] = useState(0);
@@ -23,10 +43,13 @@ function VirtualizedList({ data, renderItem, height = 400 }) {
   // Get only the visible rows to render - this is the key performance optimization
   const visibleRows = data.slice(bufferedStart, bufferedEnd);
 
-  // Handle scroll events
-  const handleScroll = (e) => {
-    setScrollTop(e.target.scrollTop);
-  };
+  // Handle scroll events - throttled for performance
+  const handleScroll = useCallback(
+    throttle((e) => {
+      setScrollTop(e.target.scrollTop);
+    }, 16), // ~60fps
+    []
+  );
 
   // Set up scroll container
   useEffect(() => {
