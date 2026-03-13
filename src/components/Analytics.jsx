@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchEmployees } from '../services/api';
 import BarChart from './BarChart';
+import CityMap from './CityMap';
 
 function Analytics() {
   const navigate = useNavigate();
@@ -130,7 +131,7 @@ function Analytics() {
           </div>
 
           {/* Chart Section */}
-          <div className="bg-white shadow rounded-lg">
+          <div className="bg-white shadow rounded-lg mb-8">
             <div className="px-6 py-4 border-b border-gray-200">
               <h2 className="text-xl font-semibold text-gray-800">Salary Distribution by City</h2>
               <p className="text-sm text-gray-500">Average salary per location</p>
@@ -147,6 +148,9 @@ function Analytics() {
               </div>
             </div>
           </div>
+
+          {/* Map Section */}
+          <CityMap employees={employees} />
         </div>
       </div>
     </div>
