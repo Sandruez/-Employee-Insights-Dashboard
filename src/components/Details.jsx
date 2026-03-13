@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchEmployeeById } from '../services/api';
 import CameraCapture from './CameraCapture';
+import SignatureCanvas from './SignatureCanvas';
 
 function Details() {
   const { id } = useParams();
@@ -10,10 +11,16 @@ function Details() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [capturedPhoto, setCapturedPhoto] = useState(null);
+  const [signature, setSignature] = useState(null);
 
   const handlePhotoCapture = (imageData) => {
     setCapturedPhoto(imageData);
     console.log('Photo captured:', imageData.substring(0, 50) + '...');
+  };
+
+  const handleSignatureChange = (signatureData) => {
+    setSignature(signatureData);
+    console.log('Signature changed:', signatureData ? 'captured' : 'cleared');
   };
 
   useEffect(() => {
@@ -115,6 +122,9 @@ function Details() {
           {/* Camera Section */}
           <CameraCapture onPhotoCapture={handlePhotoCapture} />
           
+          {/* Signature Section */}
+          <SignatureCanvas onSignatureChange={handleSignatureChange} disabled={!capturedPhoto} />
+          
           {capturedPhoto && (
             <div className="bg-white shadow rounded-lg mt-6">
               <div className="px-6 py-4 border-b border-gray-200">
@@ -129,7 +139,7 @@ function Details() {
                   style={{ maxWidth: '400px', margin: '0 auto', display: 'block' }}
                 />
                 <p className="text-center text-sm text-gray-500 mt-2">
-                  Signature capture coming next...
+                  {signature ? '✓ Signature captured - Ready for merge' : 'Waiting for signature...'}
                 </p>
               </div>
             </div>
