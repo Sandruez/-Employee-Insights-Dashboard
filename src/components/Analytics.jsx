@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchEmployees } from '../services/api';
+import BarChart from './BarChart';
 
 function Analytics() {
   const navigate = useNavigate();
@@ -135,23 +136,7 @@ function Analytics() {
               <p className="text-sm text-gray-500">Average salary per location</p>
             </div>
             <div className="px-6 py-4">
-              <div className="space-y-4">
-                {salaryData.map((item, index) => (
-                  <div key={item.city} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                      <div>
-                        <p className="font-medium text-gray-900">{item.city}</p>
-                        <p className="text-sm text-gray-500">{item.count} employees</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-lg font-semibold text-gray-900">${item.amount.toLocaleString()}</p>
-                      <p className="text-sm text-gray-500">avg salary</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <BarChart data={salaryData} height={400} />
               
               <div className="mt-6 pt-4 border-t border-gray-200">
                 <div className="flex justify-between items-center text-sm text-gray-600">
