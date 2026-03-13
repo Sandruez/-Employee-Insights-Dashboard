@@ -135,14 +135,30 @@ function Analytics() {
               <p className="text-sm text-gray-500">Average salary per location</p>
             </div>
             <div className="px-6 py-4">
-              <div className="text-center text-gray-500 py-8">
-                <div className="w-16 h-16 bg-gray-200 rounded-full mx-auto flex items-center justify-center mb-4">
-                  <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                  </svg>
+              <div className="space-y-4">
+                {salaryData.map((item, index) => (
+                  <div key={item.city} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div className="flex items-center space-x-4">
+                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                      <div>
+                        <p className="font-medium text-gray-900">{item.city}</p>
+                        <p className="text-sm text-gray-500">{item.count} employees</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-lg font-semibold text-gray-900">${item.amount.toLocaleString()}</p>
+                      <p className="text-sm text-gray-500">avg salary</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              <div className="mt-6 pt-4 border-t border-gray-200">
+                <div className="flex justify-between items-center text-sm text-gray-600">
+                  <span>Total cities: {salaryData.length}</span>
+                  <span>Highest: ${salaryData[0]?.amount.toLocaleString() || 'N/A'}</span>
+                  <span>Lowest: ${salaryData[salaryData.length - 1]?.amount.toLocaleString() || 'N/A'}</span>
                 </div>
-                <p>Chart visualization coming in next commits...</p>
-                <p className="text-sm text-gray-400 mt-2">Data ready: {salaryData.length} cities</p>
               </div>
             </div>
           </div>
