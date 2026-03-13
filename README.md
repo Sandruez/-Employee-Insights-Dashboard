@@ -84,47 +84,6 @@ The virtual scrolling system renders only visible rows to handle large datasets 
 - **After Virtualization**: ~20 DOM elements ~100ms render time
 - **Memory Usage**: Reduced by ~95%
 
-## Development Workflow
-
-This project follows an incremental development approach with 30 commits:
-
-### Phase 1: Foundation (Commits 1-5)
-- React setup with routing and Tailwind CSS
-- Login page layout and validation
-- Auth context and localStorage
-
-### Phase 2: Protected Routing (Commits 6-8)
-- Protected route component
-- Redirect loop fixes
-- Auth persistence across refreshes
-
-### Phase 3: Data Grid (Commits 9-12)
-- API service with mock data
-- Basic table rendering
-- Performance issue identification
-
-### Phase 4: Virtual Scrolling (Commits 13-18)
-- Virtual list component
-- Core math and scrollbar fixes
-- Buffer rows and transform positioning
-- Scroll handler optimization
-
-### Phase 5: Camera Integration (Commits 19-23)
-- Details page routing
-- Camera access and photo capture
-- Signature canvas
-- Image merging with alpha blending
-
-### Phase 6: Data Visualization (Commits 24-27)
-- Analytics page with audit images
-- Salary distribution calculations
-- Custom SVG bar chart
-- Interactive city map
-
-### Phase 7: Documentation (Commits 28-30)
-- Intentional bug demonstration
-- README documentation
-- Final cleanup
 
 ## Getting Started
 
