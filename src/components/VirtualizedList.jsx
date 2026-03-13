@@ -62,7 +62,12 @@ function VirtualizedList({ data, renderItem, height = 400 }) {
         container.removeEventListener('scroll', handleScroll);
       };
     }
-  }, []);
+  }, []); // ⚠️ Missing dependency: 'data'
+
+  // BUG: Using stale 'data' from initial render
+  // Missing 'data' in dependency array
+  // When data updates, handleScroll still references old data
+  // causing incorrect row rendering after data changes
 
   // Calculate total height for scrollbar - this creates the proper scroll behavior
   const totalHeight = data.length * ROW_HEIGHT;
@@ -117,6 +122,8 @@ function VirtualizedList({ data, renderItem, height = 400 }) {
         Rendering {visibleRows.length} of {data.length} rows (indices {bufferedStart}-{bufferedEnd - 1})
         <br />
         Buffer: {BUFFER_SIZE} rows above/below visible area prevents white flash
+        <br />
+        ⚠️ Stale closure bug in scroll handler - see VirtualizedList.jsx:45
       </div>
     </div>
   );
