@@ -10,15 +10,16 @@ function VirtualizedList({ data, renderItem, height = 400 }) {
   const BUFFER_SIZE = 5; // Number of extra rows to render above/below visible area
 
   // Calculate visible range based on scroll position
+  // Core virtualization math:
   const visibleStart = Math.floor(scrollTop / ROW_HEIGHT);
   const visibleCount = Math.ceil(containerHeight / ROW_HEIGHT);
   const visibleEnd = visibleStart + visibleCount;
 
-  // Add buffer to prevent white space during fast scrolling
+  // Add buffer to prevent white space when scrolling fast
   const bufferedStart = Math.max(0, visibleStart - BUFFER_SIZE);
   const bufferedEnd = Math.min(data.length, visibleEnd + BUFFER_SIZE);
 
-  // Get only the visible rows to render
+  // Get only the visible rows to render - this is the key performance optimization
   const visibleRows = data.slice(bufferedStart, bufferedEnd);
 
   // Handle scroll events
@@ -39,7 +40,7 @@ function VirtualizedList({ data, renderItem, height = 400 }) {
     }
   }, []);
 
-  // Calculate total height for scrollbar
+  // Calculate total height for scrollbar - this creates the proper scroll behavior
   const totalHeight = data.length * ROW_HEIGHT;
 
   return (
