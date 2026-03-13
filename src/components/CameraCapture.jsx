@@ -33,7 +33,6 @@ function CameraCapture({ onPhotoCapture }) {
       }
       setIsCameraActive(true);
     } catch (err) {
-      console.error('Camera access denied', err);
       setError('Camera access denied. Please allow camera permissions.');
       setIsCameraActive(false);
     }
@@ -68,12 +67,6 @@ function CameraCapture({ onPhotoCapture }) {
       if (onPhotoCapture) {
         onPhotoCapture(imageData);
       }
-      
-      console.log('Photo captured to canvas:', {
-        width: canvas.width,
-        height: canvas.height,
-        dataSize: imageData.length
-      });
     }
   };
 

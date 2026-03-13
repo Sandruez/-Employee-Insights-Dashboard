@@ -16,21 +16,16 @@ function Details() {
 
   const handlePhotoCapture = (imageData) => {
     setCapturedPhoto(imageData);
-    console.log('Photo captured:', imageData.substring(0, 50) + '...');
   };
 
   const handleSignatureChange = (signatureData) => {
     setSignature(signatureData);
-    console.log('Signature changed:', signatureData ? 'captured' : 'cleared');
   };
 
   const mergePhotoAndSignature = () => {
     if (!capturedPhoto || !signature) {
-      console.error('Both photo and signature are required for merge');
       return;
     }
-
-    console.log('Starting merge process...');
     
     // Create image elements from data URLs
     const photoImg = new Image();
@@ -59,7 +54,6 @@ function Details() {
           reader.onloadend = () => {
             const mergedDataUrl = reader.result;
             setMergedImage(mergedDataUrl);
-            console.log('Merge completed successfully');
             
             // Store merged image for analytics page
             localStorage.setItem(`audit_${id}`, mergedDataUrl);
@@ -85,7 +79,6 @@ function Details() {
         }
       } catch (err) {
         setError('Failed to load employee details');
-        console.error('Details error:', err);
       } finally {
         setLoading(false);
       }

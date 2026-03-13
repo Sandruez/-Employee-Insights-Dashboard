@@ -9,44 +9,40 @@ export function useAuth() {
 export function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
   // Check for existing auth on mount
   useEffect(() => {
     const token = localStorage.getItem('authToken');
-    const savedUser = localStorage.getItem('authUser');
+    const savedUser = localStorage.getItem('user');
     
-    console.log('Checking auth on mount:', { token: !!token, savedUser: !!savedUser });
     
     if (token && savedUser) {
       try {
         const userData = JSON.parse(savedUser);
-        console.log('Restoring user session:', userData);
         setIsAuthenticated(true);
         setUser(userData);
       } catch (error) {
-        console.error('Error parsing saved user data:', error);
         localStorage.removeItem('authToken');
-        localStorage.removeItem('authUser');
+        localStorage.removeItem('user');
       }
     }
     setLoading(false);
   }, []);
 
-  const login = (username, password) => {
-    // Simple validation - in real app would call API
-    if (username === 'admin' && password === 'admin') {
-      const userData = { username: 'admin', name: 'Administrator' };
+  const login = (email, password) => {
+    // Simple demo authentication
+    if (email && password) {
       const token = 'demo-token-' + Date.now();
-      
-      console.log('Login successful, storing auth data');
+      const userData = { id: 1, email, name: email.split('@')[0] };
       
       setIsAuthenticated(true);
       setUser(userData);
+      setToken(token);
       
-      // Store in localStorage
       localStorage.setItem('authToken', token);
-      localStorage.setItem('authUser', JSON.stringify(userData));
+      localStorage.setItem('user', JSON.stringify(userData));
       
       return true;
     }
@@ -56,8 +52,8 @@ export function AuthProvider({ children }) {
   const logout = () => {
     setIsAuthenticated(false);
     setUser(null);
+    setToken(null);
     
-    // Clear localStorage
     localStorage.removeItem('authToken');
     localStorage.removeItem('authUser');
   };

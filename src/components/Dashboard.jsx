@@ -15,7 +15,6 @@ function Dashboard() {
         setEmployees(data);
       } catch (err) {
         setError('Failed to load employee data');
-        console.error('Dashboard error:', err);
       } finally {
         setLoading(false);
       }

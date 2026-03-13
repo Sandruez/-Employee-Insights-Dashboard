@@ -50,26 +50,31 @@ function Login() {
       newErrors.password = 'Password must be at least 4 characters';
     }
     
-    return newErrors;
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
-
+    
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    const newErrors = validateForm();
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
+    if (!formData.username || !formData.password) {
+      setErrors({ general: 'Please fill in all fields' });
       return;
     }
     
-    // Use auth context login
+    if (formData.password.length < 6) {
+      setErrors({ general: 'Password must be at least 6 characters' });
+      return;
+    }
+    
     const success = login(formData.username, formData.password);
     if (success) {
       navigate('/dashboard');
     } else {
-      alert('Invalid credentials. Use admin/admin for demo');
+      setErrors({ general: 'Invalid credentials' });
     }
   };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">

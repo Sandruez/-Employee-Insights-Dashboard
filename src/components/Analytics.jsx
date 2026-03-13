@@ -46,7 +46,6 @@ function Analytics() {
         }
         
       } catch (err) {
-        console.error('Analytics loading error:', err);
       } finally {
         setLoading(false);
       }
