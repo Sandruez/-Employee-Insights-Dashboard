@@ -52,6 +52,8 @@ function VirtualizedList({ data, renderItem, height = 400 }) {
         style={{ height: `${height}px` }}
       >
         {/* Inner div to create proper scrollbar */}
+        {/* This div's height creates the scrollbar - it's the total height of all rows */}
+        {/* Even though we're only rendering ~20 rows, this makes it seem like we have 10,000 rows */}
         <div style={{ height: `${totalHeight}px`, position: 'relative' }}>
           {/* Visible rows will be positioned here */}
           <div
