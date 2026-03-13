@@ -72,10 +72,13 @@ function VirtualizedList({ data, renderItem, height = 400 }) {
                   key={item.id || actualIndex}
                   style={{
                     position: 'absolute',
-                    top: `${actualIndex * ROW_HEIGHT}px`,
+                    top: 0,
                     left: 0,
                     right: 0,
                     height: `${ROW_HEIGHT}px`,
+                    // Use transform for better performance than changing 'top' property
+                    // This moves the row to its correct position in the virtual list
+                    transform: `translateY(${actualIndex * ROW_HEIGHT}px)`,
                   }}
                 >
                   {renderItem(item, actualIndex)}
