@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchEmployeeById } from '../services/api';
+import CameraCapture from './CameraCapture';
 
 function Details() {
   const { id } = useParams();
@@ -8,6 +9,12 @@ function Details() {
   const [employee, setEmployee] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [capturedPhoto, setCapturedPhoto] = useState(null);
+
+  const handlePhotoCapture = (imageData) => {
+    setCapturedPhoto(imageData);
+    console.log('Photo captured:', imageData.substring(0, 50) + '...');
+  };
 
   useEffect(() => {
     const loadEmployee = async () => {
@@ -105,24 +112,28 @@ function Details() {
             </div>
           </div>
 
-          {/* Camera Section - Coming Soon */}
-          <div className="bg-white shadow rounded-lg">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-800">Identity Verification</h2>
-              <p className="text-sm text-gray-500">Camera capture and signature coming soon...</p>
-            </div>
-            <div className="px-6 py-8 text-center text-gray-500">
-              <div className="mb-4">
-                <div className="w-24 h-24 bg-gray-200 rounded-full mx-auto flex items-center justify-center">
-                  <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                </div>
+          {/* Camera Section */}
+          <CameraCapture onPhotoCapture={handlePhotoCapture} />
+          
+          {capturedPhoto && (
+            <div className="bg-white shadow rounded-lg mt-6">
+              <div className="px-6 py-4 border-b border-gray-200">
+                <h2 className="text-xl font-semibold text-gray-800">Captured Photo</h2>
+                <p className="text-sm text-gray-500">Photo captured successfully</p>
               </div>
-              <p>Camera capture functionality will be implemented in the next commits</p>
+              <div className="px-6 py-4">
+                <img 
+                  src={capturedPhoto} 
+                  alt="Captured" 
+                  className="w-full rounded-lg border border-gray-300"
+                  style={{ maxWidth: '400px', margin: '0 auto', display: 'block' }}
+                />
+                <p className="text-center text-sm text-gray-500 mt-2">
+                  Signature capture coming next...
+                </p>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
