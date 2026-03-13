@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -8,7 +8,7 @@ function Login() {
     password: ''
   });
   const [errors, setErrors] = useState({});
-  const { login, loading } = useAuth();
+  const { login, loading, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   // Show loading while checking auth state
@@ -21,6 +21,12 @@ function Login() {
         </div>
       </div>
     );
+  }
+
+  // If already authenticated, redirect to dashboard
+  // This prevents redirect loop when user navigates to login page while logged in
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
   }
 
   const handleChange = (e) => {
