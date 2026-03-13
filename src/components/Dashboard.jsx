@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { fetchEmployees } from '../services/api';
 
 function Dashboard() {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const loadEmployees = async () => {
@@ -150,7 +152,10 @@ function Dashboard() {
                             {new Date(employee.joinDate).toLocaleDateString()}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <button className="text-indigo-600 hover:text-indigo-900">
+                            <button 
+                              onClick={() => navigate(`/details/${employee.id}`)}
+                              className="text-indigo-600 hover:text-indigo-900"
+                            >
                               View
                             </button>
                           </td>
