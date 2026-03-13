@@ -167,6 +167,10 @@ function Dashboard() {
                   <span className="text-red-600 ml-2">⚠️ Performance warning: Large dataset may cause slow rendering</span>
                 </p>
               </div>
+              
+              {/* TODO: implement virtualization - rendering 10k rows is slow */}
+              {/* Need to implement virtual scrolling to only render visible rows */}
+              {/* This will dramatically improve performance with large datasets */}
             </div>
           </div>
         </div>
