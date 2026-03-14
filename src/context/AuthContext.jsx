@@ -55,7 +55,7 @@ export function AuthProvider({ children }) {
     setToken(null);
     
     localStorage.removeItem('authToken');
-    localStorage.removeItem('authUser');
+    localStorage.removeItem('user');
   };
 
   const value = {

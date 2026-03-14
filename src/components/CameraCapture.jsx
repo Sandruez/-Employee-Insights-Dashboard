@@ -20,6 +20,12 @@ function CameraCapture({ onPhotoCapture }) {
   const startCamera = async () => {
     try {
       setError(null);
+      
+      // Check if mediaDevices is available
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('Camera API not supported in this browser. Please use a modern browser.');
+      }
+      
       const mediaStream = await navigator.mediaDevices.getUserMedia({ 
         video: { 
           width: { ideal: 640 },
@@ -30,10 +36,24 @@ function CameraCapture({ onPhotoCapture }) {
       setStream(mediaStream);
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
+        // Wait for video to be ready
+        videoRef.current.onloadedmetadata = () => {
+          videoRef.current.play();
+        };
       }
       setIsCameraActive(true);
     } catch (err) {
-      setError('Camera access denied. Please allow camera permissions.');
+      let errorMessage = 'Camera access failed. ';
+      if (err.name === 'NotAllowedError') {
+        errorMessage += 'Please allow camera permissions in your browser settings.';
+      } else if (err.name === 'NotFoundError') {
+        errorMessage += 'No camera device found. Please connect a camera.';
+      } else if (err.name === 'NotReadableError') {
+        errorMessage += 'Camera is already in use by another application.';
+      } else {
+        errorMessage += err.message || 'Unknown error occurred.';
+      }
+      setError(errorMessage);
       setIsCameraActive(false);
     }
   };
