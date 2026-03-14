@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
 
-function CameraCapture({ onPhotoCapture }) {
+const CameraCapture = forwardRef(({ onPhotoCapture, onStopCamera }, ref) => {
   const [isStreaming, setIsStreaming] = useState(false);
   const [error, setError] = useState('');
   const [capturedImage, setCapturedImage] = useState(null);
@@ -38,6 +38,10 @@ function CameraCapture({ onPhotoCapture }) {
       videoRef.current.srcObject = null;
       setIsStreaming(false);
     }
+    // Call parent callback if provided
+    if (onStopCamera) {
+      onStopCamera();
+    }
   };
 
   const takePicture = () => {
@@ -58,6 +62,10 @@ function CameraCapture({ onPhotoCapture }) {
       onPhotoCapture(imageData);
     }
   };
+
+  useImperativeHandle(ref, () => ({
+    stopCamera
+  }));
 
   return (
     <div className="bg-white shadow rounded-lg p-6">
@@ -114,6 +122,6 @@ function CameraCapture({ onPhotoCapture }) {
       </div>
     </div>
   );
-}
+});
 
 export default CameraCapture;

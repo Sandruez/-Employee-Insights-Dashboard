@@ -15,6 +15,7 @@ function Details() {
   const [capturedPhoto, setCapturedPhoto] = useState(null);
   const [signature, setSignature] = useState(null);
   const [mergedImage, setMergedImage] = useState(null);
+  const cameraRef = useRef(null);
 
   const handleLogout = () => {
     logout();
@@ -64,6 +65,11 @@ function Details() {
             
             // Store merged image for analytics page
             localStorage.setItem(`audit_${id}`, mergedDataUrl);
+            
+            // Stop camera after successful merge
+            if (cameraRef.current && cameraRef.current.stopCamera) {
+              cameraRef.current.stopCamera();
+            }
           };
           reader.readAsDataURL(blob);
         }, 'image/jpeg', 0.9);
@@ -192,7 +198,7 @@ function Details() {
           </div>
 
           {/* Camera Section */}
-          <CameraCapture onPhotoCapture={handlePhotoCapture} />
+          <CameraCapture ref={cameraRef} onPhotoCapture={handlePhotoCapture} />
           
           {/* Signature Section */}
           <SignatureCanvas onSignatureChange={handleSignatureChange} disabled={!capturedPhoto} />
