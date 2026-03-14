@@ -11,6 +11,7 @@ function Analytics() {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [auditImage, setAuditImage] = useState(null);
+  const [allAuditImages, setAllAuditImages] = useState([]);
   const [salaryData, setSalaryData] = useState([]);
 
   const handleLogout = () => {
@@ -45,12 +46,32 @@ function Analytics() {
         setSalaryData(salaryDistribution);
         
         // Get most recent audit image
-        const keys = Object.keys(localStorage);
-        const auditKeys = keys.filter(key => key.startsWith('audit_'));
-        if (auditKeys.length > 0) {
-          const latestAuditKey = auditKeys[auditKeys.length - 1];
-          setAuditImage(localStorage.getItem(latestAuditKey));
+        const latestAuditKey = localStorage.getItem('latest_audit');
+        if (latestAuditKey) {
+          const latestAuditImage = localStorage.getItem(latestAuditKey);
+          setAuditImage(latestAuditImage);
+          console.log('Loaded latest audit image:', latestAuditKey);
+        } else {
+          // Fallback: get any audit image
+          const keys = Object.keys(localStorage);
+          const auditKeys = keys.filter(key => key.startsWith('audit_'));
+          if (auditKeys.length > 0) {
+            const latestKey = auditKeys[auditKeys.length - 1];
+            setAuditImage(localStorage.getItem(latestKey));
+            console.log('Loaded fallback audit image:', latestKey);
+          }
         }
+        
+        // Get all audit images for gallery
+        const allKeys = Object.keys(localStorage);
+        const auditKeys = allKeys.filter(key => key.startsWith('audit_'));
+        const auditImages = auditKeys.map(key => ({
+          key,
+          data: localStorage.getItem(key),
+          timestamp: key.split('_')[2]
+        })).sort((a, b) => b.timestamp - a.timestamp);
+        setAllAuditImages(auditImages);
+        console.log('Loaded all audit images:', auditImages.length);
         
       } catch (err) {
       } finally {
@@ -134,25 +155,30 @@ function Analytics() {
           {/* Audit Image Section */}
           <div className="bg-white shadow rounded-lg mb-8">
             <div className="px-6 py-4 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-800">Latest Audit Record</h2>
-              <p className="text-sm text-gray-500">Most recent identity verification</p>
+              <h2 className="text-xl font-semibold text-gray-800">Audit Records ({allAuditImages.length})</h2>
+              <p className="text-sm text-gray-500">Identity verification records</p>
             </div>
             <div className="px-6 py-4">
-              {auditImage ? (
-                <img 
-                  src={auditImage} 
-                  alt="Audit record" 
-                  className="w-full rounded-lg border border-gray-300"
-                  style={{ maxWidth: '500px', margin: '0 auto', display: 'block' }}
-                />
+              {allAuditImages.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {allAuditImages.map((audit, index) => (
+                    <div key={audit.key} className="border rounded-lg overflow-hidden">
+                      <img 
+                        src={audit.data} 
+                        alt={`Audit record ${index + 1}`}
+                        className="w-full h-48 object-cover"
+                      />
+                      <div className="p-2 bg-gray-50">
+                        <p className="text-xs text-gray-600">
+                          {new Date(parseInt(audit.timestamp)).toLocaleString()}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               ) : (
-                <div className="text-center py-8 text-gray-500">
-                  <div className="w-16 h-16 bg-gray-200 rounded-full mx-auto flex items-center justify-center mb-4">
-                    <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                  </div>
-                  <p>No audit records yet. Complete identity verification to see audit images here.</p>
+                <div className="text-center py-8">
+                  <p className="text-gray-500">No audit records found. Complete employee verification to see records here.</p>
                 </div>
               )}
             </div>

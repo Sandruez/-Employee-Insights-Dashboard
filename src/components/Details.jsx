@@ -64,7 +64,12 @@ function Details() {
             setMergedImage(mergedDataUrl);
             
             // Store merged image for analytics page
-            localStorage.setItem(`audit_${id}`, mergedDataUrl);
+            const auditKey = `audit_${id}_${Date.now()}`;
+            localStorage.setItem(auditKey, mergedDataUrl);
+            console.log('Saved audit image with key:', auditKey);
+            
+            // Also update the latest audit image reference
+            localStorage.setItem('latest_audit', auditKey);
             
             // Stop camera after successful merge
             if (cameraRef.current && cameraRef.current.stopCamera) {
