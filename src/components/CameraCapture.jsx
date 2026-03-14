@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
 
-const CameraCapture = forwardRef(({ onPhotoCapture, onStopCamera }, ref) => {
+const CameraCapture = forwardRef(({ onPhotoCapture }, ref) => {
   const [isStreaming, setIsStreaming] = useState(false);
   const [error, setError] = useState('');
   const [capturedImage, setCapturedImage] = useState(null);
@@ -37,10 +37,6 @@ const CameraCapture = forwardRef(({ onPhotoCapture, onStopCamera }, ref) => {
       stream.getTracks().forEach(track => track.stop());
       videoRef.current.srcObject = null;
       setIsStreaming(false);
-    }
-    // Call parent callback if provided
-    if (onStopCamera) {
-      onStopCamera();
     }
   };
 
