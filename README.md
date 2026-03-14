@@ -84,7 +84,6 @@ The virtual scrolling system renders only visible rows to handle large datasets 
 - **After Virtualization**: ~20 DOM elements ~100ms render time
 - **Memory Usage**: Reduced by ~95%
 
-
 ## Getting Started
 
 ### Prerequisites
