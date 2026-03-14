@@ -29,8 +29,7 @@ function CameraCapture({ onPhotoCapture }) {
       const mediaStream = await navigator.mediaDevices.getUserMedia({ 
         video: { 
           width: { ideal: 640 },
-          height: { ideal: 480 },
-          facingMode: 'user' // Prefer front camera
+          height: { ideal: 480 }
         } 
       });
       
@@ -40,30 +39,20 @@ function CameraCapture({ onPhotoCapture }) {
         
         // Wait for video to be ready and loaded
         videoRef.current.onloadedmetadata = () => {
-          videoRef.current.play()
-            .then(() => {
-              // Additional check to ensure video is actually playing
-              setTimeout(() => {
-                if (videoRef.current && videoRef.current.videoWidth > 0) {
-                  setIsCameraActive(true);
-                } else {
-                  setError('Camera started but video not loading. Please try again.');
-                  stopCamera();
-                }
-              }, 1000); // Give video time to start
-            })
-            .catch(err => {
-              setError('Failed to start video playback. Please try again.');
-              console.error('Video play error:', err);
-              stopCamera();
-            });
+          videoRef.current.play().catch(err => {
+            console.error('Video play error:', err);
+            setError('Failed to start video playback. Please try again.');
+          });
         };
         
         videoRef.current.onerror = () => {
           setError('Video loading error. Please check camera permissions.');
-          stopCamera();
         };
       }
+      
+      // Set camera active immediately
+      setIsCameraActive(true);
+      
     } catch (err) {
       let errorMessage = 'Camera access failed. ';
       if (err.name === 'NotAllowedError') {
@@ -100,27 +89,16 @@ function CameraCapture({ onPhotoCapture }) {
     const canvas = canvasRef.current;
     const context = canvas.getContext('2d');
     
-    // Debug info
-    console.log('Video dimensions:', video.videoWidth, 'x', video.videoHeight);
-    console.log('Video ready state:', video.readyState);
-    console.log('Video current time:', video.currentTime);
-    
-    // Check if video is ready and has valid dimensions
-    if (video.videoWidth === 0 || video.videoHeight === 0) {
-      setError('Video not loaded properly. Please wait and try again.');
-      return;
-    }
-    
     try {
-      // Set canvas dimensions to match video
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
+      // Set canvas dimensions to match video or use fallback
+      const width = video.videoWidth || 640;
+      const height = video.videoHeight || 480;
       
-      // Clear canvas before drawing
-      context.clearRect(0, 0, canvas.width, canvas.height);
+      canvas.width = width;
+      canvas.height = height;
       
       // Draw video frame to canvas
-      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      context.drawImage(video, 0, 0, width, height);
       
       // Get image data from canvas
       const imageData = canvas.toDataURL('image/jpeg', 0.9);
@@ -193,7 +171,7 @@ function CameraCapture({ onPhotoCapture }) {
               />
             </div>
             
-            <div className="flex justify-center space-x-4 flex-wrap">
+            <div className="flex justify-center space-x-4">
               <button
                 onClick={capturePhoto}
                 className="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
@@ -205,13 +183,6 @@ function CameraCapture({ onPhotoCapture }) {
                 className="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
               >
                 Stop Camera
-              </button>
-              <button
-                onClick={debugCamera}
-                className="px-6 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500"
-                title="Debug camera info (check console)"
-              >
-                🐛 Debug
               </button>
             </div>
           </div>
