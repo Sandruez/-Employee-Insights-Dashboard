@@ -37,25 +37,11 @@ function Login() {
     }));
   };
 
-  const validateForm = () => {
-    const newErrors = {};
-    
-    if (!formData.username.trim()) {
-      newErrors.username = 'Username is required';
-    }
-    
-    if (!formData.password.trim()) {
-      newErrors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
-    }
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-    
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    // Clear previous errors
+    setErrors({});
     
     if (!formData.username || !formData.password) {
       setErrors({ general: 'Please fill in all fields' });
@@ -138,9 +124,13 @@ function Login() {
             </div>
 
             <div className="text-sm">
-              <a href="#" className="font-medium text-indigo-600 hover:text-indigo-500">
-                Forgot your password?
-              </a>
+              <button
+              type="button"
+              className="text-sm text-indigo-600 hover:text-indigo-500"
+              onClick={() => alert('Password reset functionality would be implemented here')}
+            >
+              Forgot your password?
+            </button>
             </div>
           </div>
 
