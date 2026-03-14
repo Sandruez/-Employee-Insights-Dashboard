@@ -10,7 +10,6 @@ function CameraCapture({ onPhotoCapture }) {
 
   useEffect(() => {
     return () => {
-      // Cleanup stream when component unmounts
       if (stream) {
         stream.getTracks().forEach(track => track.stop());
       }
@@ -20,28 +19,32 @@ function CameraCapture({ onPhotoCapture }) {
   const startCamera = async () => {
     try {
       setError(null);
+      setIsCameraActive(false);
       
-      // Check if mediaDevices is available
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+      
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        throw new Error('Camera API not supported in this browser. Please use a modern browser.');
+        throw new Error('Camera API not supported. Please use Chrome, Firefox, or Safari.');
       }
       
       const mediaStream = await navigator.mediaDevices.getUserMedia({ 
-        video: { 
-          width: { ideal: 640 },
-          height: { ideal: 480 }
-        } 
+        video: true,
+        audio: false
       });
       
       setStream(mediaStream);
+      
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
         
-        // Wait for video to be ready and loaded
         videoRef.current.onloadedmetadata = () => {
-          videoRef.current.play().catch(err => {
+          videoRef.current.play().then(() => {
+            setIsCameraActive(true);
+          }).catch(err => {
             console.error('Video play error:', err);
-            setError('Failed to start video playback. Please try again.');
+            setError('Failed to start video. Please try again.');
           });
         };
         
@@ -50,22 +53,20 @@ function CameraCapture({ onPhotoCapture }) {
         };
       }
       
-      // Set camera active immediately
-      setIsCameraActive(true);
-      
     } catch (err) {
+      console.error('Camera start error:', err);
       let errorMessage = 'Camera access failed. ';
+      
       if (err.name === 'NotAllowedError') {
-        errorMessage += 'Please allow camera permissions in your browser settings.';
+        errorMessage = 'Camera permission denied. Please allow camera access and refresh the page.';
       } else if (err.name === 'NotFoundError') {
-        errorMessage += 'No camera device found. Please connect a camera.';
+        errorMessage = 'No camera found. Please connect a camera.';
       } else if (err.name === 'NotReadableError') {
-        errorMessage += 'Camera is already in use by another application.';
-      } else if (err.name === 'OverconstrainedError') {
-        errorMessage += 'Camera does not support required settings. Try a different camera.';
+        errorMessage = 'Camera is already in use by another application.';
       } else {
-        errorMessage += err.message || 'Unknown error occurred.';
+        errorMessage += err.message || ' Please try again.';
       }
+      
       setError(errorMessage);
       setIsCameraActive(false);
     }
@@ -80,8 +81,8 @@ function CameraCapture({ onPhotoCapture }) {
   };
 
   const capturePhoto = () => {
-    if (!videoRef.current || !canvasRef.current) {
-      setError('Camera not ready. Please try again.');
+    if (!videoRef.current || !canvasRef.current || !isCameraActive) {
+      setError('Camera not ready. Please start the camera first.');
       return;
     }
 
@@ -90,41 +91,25 @@ function CameraCapture({ onPhotoCapture }) {
     const context = canvas.getContext('2d');
     
     try {
-      // Set canvas dimensions to match video or use fallback
       const width = video.videoWidth || 640;
       const height = video.videoHeight || 480;
       
       canvas.width = width;
       canvas.height = height;
       
-      // Draw video frame to canvas
       context.drawImage(video, 0, 0, width, height);
       
-      // Get image data from canvas
-      const imageData = canvas.toDataURL('image/jpeg', 0.9);
+      const imageData = canvas.toDataURL('image/jpeg', 0.8);
       setCapturedImage(imageData);
       
-      // Pass to parent component
       if (onPhotoCapture) {
         onPhotoCapture(imageData);
       }
       
-      setError(null); // Clear any previous errors
+      setError(null);
     } catch (err) {
-      setError('Failed to capture photo. Please try again.');
       console.error('Capture error:', err);
-    }
-  };
-
-  const debugCamera = () => {
-    if (videoRef.current) {
-      console.log('Camera Debug Info:');
-      console.log('- Video Width:', videoRef.current.videoWidth);
-      console.log('- Video Height:', videoRef.current.videoHeight);
-      console.log('- Ready State:', videoRef.current.readyState);
-      console.log('- Current Time:', videoRef.current.currentTime);
-      console.log('- Stream Active:', !!stream);
-      console.log('- Camera Active:', isCameraActive);
+      setError('Failed to capture photo. Please try again.');
     }
   };
 
@@ -166,6 +151,7 @@ function CameraCapture({ onPhotoCapture }) {
                 ref={videoRef}
                 autoPlay
                 playsInline
+                muted
                 className="w-full rounded-lg border border-gray-300"
                 style={{ maxWidth: '640px', margin: '0 auto', display: 'block' }}
               />
