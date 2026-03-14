@@ -63,13 +63,25 @@ function Details() {
             const mergedDataUrl = reader.result;
             setMergedImage(mergedDataUrl);
             
-            // Store merged image for analytics page
-            const auditKey = `audit_${id}_${Date.now()}`;
+            // Store merged image for analytics page with employee ID mapping
+            const auditKey = `audit_employee_${id}`;
             localStorage.setItem(auditKey, mergedDataUrl);
-            console.log('Saved audit image with key:', auditKey);
             
-            // Also update the latest audit image reference
-            localStorage.setItem('latest_audit', auditKey);
+            // Also store in general audit log for analytics gallery
+            const galleryKey = `audit_${id}_${Date.now()}`;
+            localStorage.setItem(galleryKey, mergedDataUrl);
+            
+            // Update employee audit mapping
+            const employeeAudits = JSON.parse(localStorage.getItem('employee_audit_mapping') || '{}');
+            employeeAudits[id] = {
+              auditKey,
+              galleryKey,
+              timestamp: Date.now(),
+              employeeId: id
+            };
+            localStorage.setItem('employee_audit_mapping', JSON.stringify(employeeAudits));
+            
+            console.log('Saved audit image for employee:', id, 'with keys:', auditKey, galleryKey);
             
             // Stop camera after successful merge
             if (cameraRef.current && cameraRef.current.stopCamera) {

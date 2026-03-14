@@ -62,16 +62,31 @@ function Analytics() {
           }
         }
         
-        // Get all audit images for gallery
-        const allKeys = Object.keys(localStorage);
-        const auditKeys = allKeys.filter(key => key.startsWith('audit_'));
-        const auditImages = auditKeys.map(key => ({
-          key,
-          data: localStorage.getItem(key),
-          timestamp: key.split('_')[2]
-        })).sort((a, b) => b.timestamp - a.timestamp);
-        setAllAuditImages(auditImages);
-        console.log('Loaded all audit images:', auditImages.length);
+        // Get employee audit mappings
+        const employeeAuditMapping = JSON.parse(localStorage.getItem('employee_audit_mapping') || '{}');
+        const mappedAuditImages = [];
+        
+        // Get audit images with employee information
+        Object.keys(employeeAuditMapping).forEach(employeeId => {
+          const auditInfo = employeeAuditMapping[employeeId];
+          const auditImageData = localStorage.getItem(auditInfo.auditKey);
+          if (auditImageData) {
+            const employee = employeeData.find(emp => emp.id === parseInt(employeeId));
+            mappedAuditImages.push({
+              employeeId,
+              employeeName: employee ? employee.name : `Employee ${employeeId}`,
+              employeeDepartment: employee ? employee.department : 'Unknown',
+              employeeCity: employee ? employee.city : 'Unknown',
+              auditKey: auditInfo.auditKey,
+              galleryKey: auditInfo.galleryKey,
+              data: auditImageData,
+              timestamp: auditInfo.timestamp
+            });
+          }
+        });
+        
+        setAllAuditImages(mappedAuditImages.sort((a, b) => b.timestamp - a.timestamp));
+        console.log('Loaded mapped audit images:', mappedAuditImages.length);
         
       } catch (err) {
       } finally {
@@ -155,23 +170,33 @@ function Analytics() {
           {/* Audit Image Section */}
           <div className="bg-white shadow rounded-lg mb-8">
             <div className="px-6 py-4 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-800">Audit Records ({allAuditImages.length})</h2>
-              <p className="text-sm text-gray-500">Identity verification records</p>
+              <h2 className="text-xl font-semibold text-gray-800">Employee Audit Records ({allAuditImages.length})</h2>
+              <p className="text-sm text-gray-500">Identity verification records mapped to employees</p>
             </div>
             <div className="px-6 py-4">
               {allAuditImages.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {allAuditImages.map((audit, index) => (
-                    <div key={audit.key} className="border rounded-lg overflow-hidden">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {allAuditImages.map((audit) => (
+                    <div key={audit.employeeId} className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
                       <img 
                         src={audit.data} 
-                        alt={`Audit record ${index + 1}`}
+                        alt={`${audit.employeeName} audit record`}
                         className="w-full h-48 object-cover"
                       />
-                      <div className="p-2 bg-gray-50">
-                        <p className="text-xs text-gray-600">
-                          {new Date(parseInt(audit.timestamp)).toLocaleString()}
+                      <div className="p-4 bg-gray-50">
+                        <h4 className="font-semibold text-gray-900">{audit.employeeName}</h4>
+                        <p className="text-sm text-gray-600">ID: {audit.employeeId}</p>
+                        <p className="text-sm text-gray-600">{audit.employeeDepartment}</p>
+                        <p className="text-sm text-gray-600">{audit.employeeCity}</p>
+                        <p className="text-xs text-gray-500 mt-2">
+                          {new Date(audit.timestamp).toLocaleString()}
                         </p>
+                        <button
+                          onClick={() => navigate(`/details/${audit.employeeId}`)}
+                          className="mt-2 text-xs bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700"
+                        >
+                          View Employee
+                        </button>
                       </div>
                     </div>
                   ))}
